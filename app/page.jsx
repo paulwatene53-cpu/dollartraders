@@ -1,623 +1,741 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const tools = [
   {
     id: 1,
     name: "Bot Builder",
     icon: "🤖",
+    color: "purple",
     description: "Create and customize your own trading bot",
   },
   {
     id: 2,
     name: "Free Bot",
-    icon: "🆓",
-    description: "Use our free automated trading bot",
+    icon: "🎁",
+    color: "blue",
+    description: "Use powerful free trading bots",
   },
   {
     id: 3,
     name: "Premium AI Bot",
-    icon: "🧠",
-    description: "Advanced AI-powered trading automation",
+    icon: "👑",
+    color: "orange",
+    description: "Advanced AI bots with higher accuracy",
   },
   {
     id: 4,
     name: "Signal AI",
-    icon: "📡",
-    description: "AI market signals and trade setups",
+    icon: "◉",
+    color: "green",
+    description: "AI generated trading signals",
   },
   {
     id: 5,
     name: "Manual Trader",
-    icon: "🎯",
-    description: "Place trades manually with full control",
+    icon: "☝",
+    color: "yellow",
+    description: "Trade manually with full control",
   },
   {
     id: 6,
     name: "Bulk Trader",
-    icon: "⚡",
-    description: "Manage multiple trades efficiently",
+    icon: "▱",
+    color: "pink",
+    description: "Execute multiple trades at once",
   },
   {
     id: 7,
     name: "Copy Trader",
-    icon: "👥",
-    description: "Copy selected trading strategies",
+    icon: "♙",
+    color: "cyan",
+    description: "Copy and follow top performing traders",
   },
   {
     id: 8,
     name: "Analysis Tool",
-    icon: "📊",
-    description: "Analyze digits, trends and market data",
+    icon: "⌁",
+    color: "purple",
+    description: "Powerful market analysis tools",
   },
   {
     id: 9,
     name: "Chart",
-    icon: "📈",
-    description: "View live market charts and movement",
+    icon: "↗",
+    color: "blue",
+    description: "Advanced charts and indicators",
   },
 ];
 
-export default function Home() {
+const digits = [
+  { digit: 0, value: "9.8%" },
+  { digit: 1, value: "11.3%" },
+  { digit: 2, value: "8.8%" },
+  { digit: 3, value: "10.2%" },
+  { digit: 4, value: "10.0%" },
+  { digit: 5, value: "8.4%" },
+  { digit: 6, value: "10.9%" },
+  { digit: 7, value: "10.2%" },
+  { digit: 8, value: "12.6%" },
+  { digit: 9, value: "7.8%" },
+];
+
+export default function HomePage() {
   const [selectedTool, setSelectedTool] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [balanceOpen, setBalanceOpen] = useState(false);
+  const [isLive, setIsLive] = useState(true);
+  const [price, setPrice] = useState(734.44);
+  const [change, setChange] = useState(2.35);
+  const [signalConfidence, setSignalConfidence] = useState(72);
+  const [seconds, setSeconds] = useState(2);
+  const [chartPoints, setChartPoints] = useState([
+    733.1,
+    733.6,
+    733.4,
+    734.0,
+    734.7,
+    734.3,
+    735.0,
+    734.6,
+    734.1,
+    733.8,
+    733.4,
+    733.0,
+    732.7,
+    733.2,
+    733.8,
+    734.1,
+    733.9,
+    734.5,
+    735.1,
+    734.6,
+    733.8,
+    733.2,
+    732.9,
+    733.4,
+    733.9,
+    734.44,
+  ]);
+
+  // Simulated live market movement for the visual dashboard.
+  // Real Deriv data should be connected later through the API/WebSocket.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrice((oldPrice) => {
+        const movement = (Math.random() - 0.47) * 0.55;
+        return Number((oldPrice + movement).toFixed(2));
+      });
+
+      setChange((oldChange) => {
+        const movement = (Math.random() - 0.5) * 0.08;
+        return Number((oldChange + movement).toFixed(2));
+      });
+
+      setSignalConfidence((old) => {
+        const movement = Math.floor(Math.random() * 5) - 2;
+        return Math.min(95, Math.max(55, old + movement));
+      });
+
+      setSeconds((old) => {
+        if (old <= 1) return 2;
+        return old - 1;
+      });
+
+      setChartPoints((oldPoints) => {
+        const last = oldPoints[oldPoints.length - 1];
+        const next = Number(
+          (last + (Math.random() - 0.48) * 0.65).toFixed(2)
+        );
+
+        return [...oldPoints.slice(1), next];
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const openTool = (tool) => {
+    setSelectedTool(tool);
+  };
+
+  const closeTool = () => {
+    setSelectedTool(null);
+  };
+
+  const login = () => {
+    window.location.href = "/api/auth/login";
+  };
 
   return (
     <main className="dashboard">
-      {/* HEADER */}
-      <header className="topbar">
+      {/* =========================
+          SIDEBAR
+      ========================== */}
+      <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
         <div className="brand">
-          <div className="logo">₿</div>
+          <div className="brand-mark">
+            <span>D</span>
+            <span>T</span>
+          </div>
 
           <div>
-            <h1>dollertraders</h1>
-            <span>AI Trading Platform</span>
+            <div className="brand-name">
+              <span>DOLLAR</span>TRADERS
+            </div>
+            <div className="brand-subtitle">
+              AI TRADING PLATFORM
+            </div>
           </div>
         </div>
 
-        <div className="header-actions">
-          <button className="theme-btn">☀️</button>
-          <button className="login-btn">Log in</button>
-          <button className="signup-btn">Sign up</button>
-        </div>
-      </header>
+        <nav className="side-nav">
+          <button className="side-link active">
+            <span className="side-number home-icon">⌂</span>
+            <span>
+              <strong>Dashboard</strong>
+            </span>
+          </button>
 
-      {/* WELCOME */}
-      <section className="welcome">
-        <div>
-          <p className="small-title">WELCOME TO DOLLERTRADERS</p>
-          <h2>
-            Smart Trading.
-            <br />
-            <span>Powered by AI.</span>
-          </h2>
-
-          <p className="welcome-text">
-            Choose a trading tool below to start analyzing the market,
-            building bots or managing your trades.
-          </p>
-        </div>
-
-        <div className="market-status">
-          <span className="status-dot"></span>
-          <div>
-            <strong>Market Online</strong>
-            <small>Live system connected</small>
-          </div>
-        </div>
-      </section>
-
-      {/* TOOL GRID */}
-      <section className="tools-section">
-        <div className="section-heading">
-          <div>
-            <h3>Trading Dashboard</h3>
-            <p>Select a tool to continue</p>
-          </div>
-
-          <div className="live">
-            <span></span> LIVE
-          </div>
-        </div>
-
-        <div className="tool-grid">
           {tools.map((tool) => (
             <button
               key={tool.id}
-              className={`tool-card ${
-                selectedTool === tool.id ? "active" : ""
-              }`}
-              onClick={() => setSelectedTool(tool.id)}
+              className="side-link"
+              onClick={() => openTool(tool)}
             >
-              <div className="tool-number">{tool.id}</div>
+              <span className={`side-number ${tool.color}`}>
+                {tool.id}
+              </span>
 
-              <div className="tool-icon">{tool.icon}</div>
+              <span className="side-text">
+                <strong>{tool.name}</strong>
+                <small>{tool.description}</small>
+              </span>
 
-              <div className="tool-content">
-                <h4>{tool.name}</h4>
-                <p>{tool.description}</p>
-              </div>
-
-              <div className="arrow">→</div>
+              <span className="side-arrow">›</span>
             </button>
           ))}
-        </div>
-      </section>
+        </nav>
 
-      {/* QUICK MARKET PANEL */}
-      <section className="market-panel">
-        <div className="market-title">
+        <div className="demo-box">
+          <div className="demo-icon">◈</div>
           <div>
-            <span className="live-dot"></span>
-            LIVE MARKET
-          </div>
-
-          <span>Volatility Indices</span>
-        </div>
-
-        <div className="market-grid">
-          <div>
-            <small>MARKET</small>
-            <strong>Volatility 100</strong>
-          </div>
-
-          <div>
-            <small>LAST DIGIT</small>
-            <strong>4</strong>
-          </div>
-
-          <div>
-            <small>PRICE</small>
-            <strong>734.44</strong>
-          </div>
-
-          <div>
-            <small>STATUS</small>
-            <strong className="green">ACTIVE</strong>
+            <strong>DEMO MODE</strong>
+            <p>All trading is currently in demo mode.</p>
           </div>
         </div>
-      </section>
+      </aside>
 
-      {/* SELECTED TOOL */}
-      {selectedTool && (
-        <div className="selected-panel">
-          <div>
-            <span>SELECTED TOOL</span>
-            <h3>
-              {tools.find((tool) => tool.id === selectedTool)?.name}
-            </h3>
-          </div>
+      {/* =========================
+          MAIN AREA
+      ========================== */}
+      <section className="main-area">
 
-          <button onClick={() => setSelectedTool(null)}>
-            Close
+        {/* TOP BAR */}
+        <header className="topbar">
+          <button
+            className="mobile-menu"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Open menu"
+          >
+            ☰
           </button>
+
+          <div className="top-status">
+            <span className={`status-dot ${isLive ? "online" : "offline"}`} />
+            <strong>
+              {isLive ? "MARKET LIVE" : "MARKET OFFLINE"}
+            </strong>
+          </div>
+
+          <div className="top-actions">
+
+            {/* LOGIN */}
+            <button className="login-button" onClick={login}>
+              <span>↪</span>
+              Connect Deriv
+            </button>
+
+            {/* ACCOUNT */}
+            <div className="dropdown-wrapper">
+              <button
+                className="top-account"
+                onClick={() => setAccountOpen(!accountOpen)}
+              >
+                <span className="account-icon">♙</span>
+                <span>
+                  <small>Account</small>
+                  <strong>Demo Account</strong>
+                </span>
+                <span>⌄</span>
+              </button>
+
+              {accountOpen && (
+                <div className="dropdown">
+                  <button onClick={login}>
+                    Connect Deriv Account
+                  </button>
+                  <button>Account Details</button>
+                  <button>Logout</button>
+                </div>
+              )}
+            </div>
+
+            {/* BALANCE */}
+            <div className="dropdown-wrapper">
+              <button
+                className="balance-box"
+                onClick={() => setBalanceOpen(!balanceOpen)}
+              >
+                <span>
+                  <small>Balance</small>
+                  <strong>10,000.00 USD</strong>
+                </span>
+                <span>⌄</span>
+              </button>
+
+              {balanceOpen && (
+                <div className="dropdown balance-dropdown">
+                  <div>
+                    <small>Demo Balance</small>
+                    <strong>10,000.00 USD</strong>
+                  </div>
+                  <div>
+                    <small>Profit/Loss</small>
+                    <strong className="green-text">
+                      +0.00 USD
+                    </strong>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="profile-circle">DT</div>
+          </div>
+        </header>
+
+        {/* CONTENT */}
+        <div className="content">
+
+          {/* MARKET + ACCOUNT ROW */}
+          <div className="top-grid">
+
+            {/* MARKET OVERVIEW */}
+            <section className="panel market-panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="green-chart-icon">⌁</span>
+                  <strong>Market Overview</strong>
+                </div>
+
+                <span className="live-label">
+                  <span className="status-dot online" />
+                  LIVE
+                </span>
+              </div>
+
+              <div className="market-name">
+                Volatility 100 (1s) Index
+              </div>
+
+              <div className="market-main">
+                <div>
+                  <div className="big-price">
+                    {price.toFixed(2)}
+                    <span className="up-arrow">↑</span>
+                  </div>
+
+                  <div className="positive">
+                    +{change.toFixed(2)} ({Math.abs(change / 7.3).toFixed(2)}%)
+                  </div>
+                </div>
+
+                <div className="market-stats">
+                  <div>
+                    <small>High</small>
+                    <strong>735.62</strong>
+                  </div>
+
+                  <div>
+                    <small>Low</small>
+                    <strong>730.81</strong>
+                  </div>
+
+                  <div>
+                    <small>24H Change</small>
+                    <strong className="green-text">0.32%</strong>
+                  </div>
+                </div>
+
+                <MiniWave />
+              </div>
+            </section>
+
+            {/* ACCOUNT OVERVIEW */}
+            <section className="panel account-panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="purple-icon">♙</span>
+                  <strong>Account Overview</strong>
+                </div>
+
+                <span className="demo-label">Demo</span>
+              </div>
+
+              <div className="account-grid">
+                <div>
+                  <small>Balance</small>
+                  <strong className="green-text">
+                    10,000.00 USD
+                  </strong>
+                </div>
+
+                <div>
+                  <small>Profit/Loss</small>
+                  <strong className="green-text">
+                    +0.00 USD
+                  </strong>
+                </div>
+
+                <div>
+                  <small>Equity</small>
+                  <strong>10,000.00 USD</strong>
+                </div>
+
+                <div>
+                  <small>Available</small>
+                  <strong>10,000.00 USD</strong>
+                </div>
+              </div>
+
+              <button className="account-details">
+                ACCOUNT DETAILS ↗
+              </button>
+            </section>
+          </div>
+
+          {/* QUICK ACCESS + SIGNAL */}
+          <div className="middle-grid">
+
+            {/* QUICK ACCESS */}
+            <section className="panel quick-panel">
+              <div className="section-title">
+                <span>⚡</span>
+                Quick Access
+              </div>
+
+              <div className="tool-grid">
+                {tools.map((tool) => (
+                  <button
+                    key={tool.id}
+                    className={`tool-card ${tool.color}`}
+                    onClick={() => openTool(tool)}
+                  >
+                    <div className="tool-icon">
+                      {tool.icon}
+                    </div>
+
+                    <div className="tool-number">
+                      {tool.id}
+                    </div>
+
+                    <div className="tool-content">
+                      <strong>{tool.name}</strong>
+                      <small>{tool.description}</small>
+                    </div>
+
+                    <span className="tool-arrow">›</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {/* AI SIGNAL */}
+            <section className="panel signal-panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="signal-icon">♧</span>
+                  <strong>AI Signal</strong>
+                </div>
+
+                <small>Confidence</small>
+              </div>
+
+              <div className="signal-header">
+                <div>
+                  <h2>Matches</h2>
+                  <p>Volatility 100 (1s) Index</p>
+                </div>
+
+                <div className="confidence">
+                  <div
+                    className="confidence-ring"
+                    style={{
+                      "--confidence": `${signalConfidence}%`,
+                    }}
+                  >
+                    <span>{signalConfidence}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="signal-row">
+                <span>Next Tick Prediction</span>
+                <strong>{seconds} Seconds</strong>
+              </div>
+
+              <div className="signal-row">
+                <span>Recommended Entry</span>
+                <strong>734.40 - 734.60</strong>
+              </div>
+
+              <div className="signal-row">
+                <span>Expiry</span>
+                <strong>1 Tick</strong>
+              </div>
+
+              <button
+                className="signal-button"
+                onClick={() =>
+                  setSelectedTool({
+                    name: "Signal AI",
+                    icon: "◉",
+                    description:
+                      "AI generated trading signal",
+                  })
+                }
+              >
+                VIEW SIGNAL DETAILS
+                <span>›</span>
+              </button>
+            </section>
+          </div>
+
+          {/* CHART + DIGIT ANALYSIS */}
+          <div className="bottom-grid">
+
+            {/* CHART */}
+            <section className="panel chart-panel">
+              <div className="chart-header">
+                <strong>Live Chart</strong>
+
+                <div className="chart-controls">
+                  <button>1s⌄</button>
+                  <button>⌁⌄</button>
+                  <button>⛶</button>
+                  <button>×</button>
+                </div>
+              </div>
+
+              <div className="chart-area">
+                <div className="chart-y">
+                  <span>736.00</span>
+                  <span>735.00</span>
+                  <span>734.00</span>
+                  <span>733.00</span>
+                  <span>732.00</span>
+                  <span>731.00</span>
+                </div>
+
+                <div className="grid-lines">
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                  <span />
+                </div>
+
+                <ChartLine points={chartPoints} />
+
+                <div className="current-price">
+                  {price.toFixed(2)}
+                </div>
+
+                <div className="chart-times">
+                  <span>14:42:10</span>
+                  <span>14:42:20</span>
+                  <span>14:42:30</span>
+                  <span>14:42:40</span>
+                  <span>14:42:50</span>
+                  <span>14:43:00</span>
+                </div>
+              </div>
+            </section>
+
+            {/* DIGIT ANALYSIS */}
+            <section className="panel digit-panel">
+              <div className="digit-heading">
+                <strong>Digit Analysis</strong>
+                <span>(Last 1000 Ticks)</span>
+              </div>
+
+              <div className="digit-grid">
+                {digits.map((item) => (
+                  <div
+                    key={item.digit}
+                    className={`digit-box ${
+                      item.digit === 8
+                        ? "hot-digit"
+                        : item.digit === 9
+                        ? "cold-digit"
+                        : ""
+                    }`}
+                  >
+                    <strong>{item.digit}</strong>
+                    <span>{item.value}</span>
+
+                    <div className="digit-bar">
+                      <i
+                        style={{
+                          width: item.value,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="heat-labels">
+                <span>Hot</span>
+
+                <div className="heat-bar">
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </div>
+
+                <span>Cold</span>
+              </div>
+
+              <div className="neutral">Neutral</div>
+            </section>
+          </div>
+
+          {/* SYSTEM STATUS */}
+          <footer className="system-status">
+
+            <div>
+              <small>System Status</small>
+              <strong>
+                <span className="status-dot online" />
+                All systems operational
+              </strong>
+            </div>
+
+            <div>
+              <small>Deriv API</small>
+              <strong>
+                <span className="status-dot" />
+                Awaiting connection
+              </strong>
+            </div>
+
+            <div>
+              <small>Server Time</small>
+              <strong>
+                {new Date().toLocaleTimeString()}
+              </strong>
+            </div>
+
+            <div>
+              <small>Risk Disclaimer</small>
+              <strong>
+                Trading involves risk. Past performance is
+                not indicative of future results.
+              </strong>
+            </div>
+
+          </footer>
+        </div>
+      </section>
+
+      {/* =========================
+          TOOL MODAL
+      ========================== */}
+      {selectedTool && (
+        <div className="modal-backdrop" onClick={closeTool}>
+          <div
+            className="modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button className="modal-close" onClick={closeTool}>
+              ×
+            </button>
+
+            <div className="modal-icon">
+              {selectedTool.icon}
+            </div>
+
+            <h2>{selectedTool.name}</h2>
+
+            <p>{selectedTool.description}</p>
+
+            <div className="demo-notice">
+              <span>●</span>
+              Demo interface
+            </div>
+
+            <p className="modal-description">
+              This module is ready for its trading functionality
+              to be connected to the Deriv API.
+            </p>
+
+            <button
+              className="modal-connect"
+              onClick={login}
+            >
+              CONNECT DERIV ACCOUNT
+            </button>
+          </div>
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer>
-        <div>
-          <strong>dollertraders</strong>
-          <span>AI Trading Platform</span>
-        </div>
+      {/* =========================
+          STYLES
+      ========================== */}
+      <style jsx>{`
 
-        <p>Powered by modern trading technology</p>
-      </footer>
-
-      {/* PAGE STYLES */}
-      <style jsx global>{`
         * {
           box-sizing: border-box;
-        }
-
-        body {
-          margin: 0;
-          font-family: Arial, Helvetica, sans-serif;
-          background: #f6f7f9;
-          color: #111;
-        }
-
-        button {
-          font-family: inherit;
-          cursor: pointer;
         }
 
         .dashboard {
           min-height: 100vh;
           background:
             radial-gradient(
-              circle at top right,
-              rgba(0, 0, 0, 0.04),
-              transparent 30%
+              circle at 20% 0%,
+              rgba(0, 255, 150, 0.045),
+              transparent 28%
             ),
-            #f6f7f9;
-        }
-
-        /* TOP BAR */
-
-        .topbar {
-          height: 78px;
-          background: white;
-          border-bottom: 1px solid #e8e8e8;
+            #020710;
+          color: #eef4ff;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0 5%;
-          position: sticky;
-          top: 0;
-          z-index: 20;
+          font-family:
+            Inter,
+            Arial,
+            Helvetica,
+            sans-serif;
         }
 
-        .brand {
-          display: flex;
-          align-items: center;
-          gap: 12px;
+        button {
+          font-family: inherit;
         }
 
-        .logo {
-          width: 42px;
-          height: 42px;
-          border-radius: 12px;
-          background: #050505;
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          font-size: 21px;
-        }
+        /* SIDEBAR */
 
-        .brand h1 {
-          margin: 0;
-          font-size: 21px;
-          text-transform: lowercase;
-        }
-
-        .brand span {
-          display: block;
-          color: #777;
-          font-size: 11px;
-          margin-top: 3px;
-        }
-
-        .header-actions {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .theme-btn,
-        .login-btn,
-        .signup-btn {
-          border-radius: 25px;
-          padding: 11px 18px;
-          border: 1px solid #ddd;
-          background: white;
-          font-size: 14px;
-        }
-
-        .theme-btn {
-          border: none;
-          font-size: 17px;
-        }
-
-        .signup-btn {
-          background: #050505;
-          color: white;
-          border-color: #050505;
-        }
-
-        /* WELCOME */
-
-        .welcome {
-          max-width: 1200px;
-          margin: auto;
-          padding: 70px 5% 45px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 30px;
-        }
-
-        .small-title {
-          font-size: 12px;
-          letter-spacing: 2px;
-          font-weight: bold;
-          color: #777;
-          margin-bottom: 12px;
-        }
-
-        .welcome h2 {
-          font-size: clamp(40px, 6vw, 66px);
-          line-height: 0.98;
-          margin: 0;
-          letter-spacing: -3px;
-        }
-
-        .welcome h2 span {
-          color: #666;
-        }
-
-        .welcome-text {
-          max-width: 560px;
-          color: #666;
-          line-height: 1.6;
-          margin-top: 22px;
-        }
-
-        .market-status {
-          min-width: 210px;
-          background: white;
-          border: 1px solid #e5e5e5;
-          border-radius: 18px;
-          padding: 18px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-        }
-
-        .status-dot {
-          width: 11px;
-          height: 11px;
-          border-radius: 50%;
-          background: #20c997;
-        }
-
-        .market-status strong,
-        .market-status small {
-          display: block;
-        }
-
-        .market-status small {
-          color: #888;
-          margin-top: 4px;
-          font-size: 11px;
-        }
-
-        /* TOOLS */
-
-        .tools-section {
-          max-width: 1200px;
-          margin: auto;
-          padding: 20px 5% 40px;
-        }
-
-        .section-heading {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-
-        .section-heading h3 {
-          margin: 0;
-          font-size: 25px;
-        }
-
-        .section-heading p {
-          color: #888;
-          margin: 5px 0 0;
-          font-size: 13px;
-        }
-
-        .live {
-          font-size: 11px;
-          font-weight: bold;
-          display: flex;
-          gap: 7px;
-          align-items: center;
-        }
-
-        .live span,
-        .live-dot {
-          width: 8px;
-          height: 8px;
-          display: inline-block;
-          background: #20c997;
-          border-radius: 50%;
-        }
-
-        .tool-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 15px;
-        }
-
-        .tool-card {
-          position: relative;
-          min-height: 155px;
-          border: 1px solid #e5e5e5;
-          background: white;
-          border-radius: 20px;
-          padding: 20px;
-          text-align: left;
-          transition: 0.2s ease;
-          overflow: hidden;
-        }
-
-        .tool-card:hover,
-        .tool-card.active {
-          transform: translateY(-3px);
-          border-color: #111;
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
-        }
-
-        .tool-number {
-          position: absolute;
-          top: 14px;
-          right: 16px;
-          font-size: 11px;
-          color: #aaa;
-        }
-
-        .tool-icon {
-          font-size: 30px;
-          margin-bottom: 14px;
-        }
-
-        .tool-content h4 {
-          margin: 0 0 7px;
-          font-size: 17px;
-        }
-
-        .tool-content p {
-          margin: 0;
-          color: #888;
-          font-size: 12px;
-          line-height: 1.5;
-          max-width: 220px;
-        }
-
-        .arrow {
-          position: absolute;
-          right: 18px;
-          bottom: 17px;
-          font-size: 20px;
-        }
-
-        /* MARKET */
-
-        .market-panel {
-          max-width: 1200px;
-          margin: 0 auto 40px;
-          background: #101010;
-          color: white;
-          border-radius: 24px;
-          padding: 25px;
-          width: 90%;
-        }
-
-        .market-title {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 25px;
-          font-size: 12px;
-          color: #aaa;
-        }
-
-        .market-title div {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          color: white;
-          font-weight: bold;
-        }
-
-        .market-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 20px;
-        }
-
-        .market-grid small {
-          display: block;
-          color: #777;
-          font-size: 10px;
-          margin-bottom: 7px;
-        }
-
-        .market-grid strong {
-          font-size: 18px;
-        }
-
-        .green {
-          color: #20c997;
-        }
-
-        /* SELECTED */
-
-        .selected-panel {
-          max-width: 1200px;
-          width: 90%;
-          margin: 0 auto 35px;
-          background: white;
-          border: 1px solid #ddd;
-          border-radius: 18px;
-          padding: 18px 22px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .selected-panel span {
-          font-size: 10px;
-          color: #999;
-        }
-
-        .selected-panel h3 {
-          margin: 5px 0 0;
-        }
-
-        .selected-panel button {
-          border: 1px solid #ddd;
-          background: white;
-          padding: 9px 15px;
-          border-radius: 20px;
-        }
-
-        /* FOOTER */
-
-        footer {
-          border-top: 1px solid #e5e5e5;
-          padding: 30px 5%;
-          display: flex;
-          justify-content: space-between;
-          color: #777;
-          font-size: 12px;
-          background: white;
-        }
-
-        footer strong {
-          display: block;
-          color: #111;
-          font-size: 15px;
-        }
-
-        footer span {
-          display: block;
-          margin-top: 4px;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 800px) {
-          .topbar {
-            padding: 0 18px;
-          }
-
-          .login-btn {
-            display: none;
-          }
-
-          .welcome {
-            padding-top: 45px;
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .market-status {
-            width: 100%;
-          }
-
-          .tool-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .market-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .welcome h2 {
-            font-size: 45px;
-          }
-
-          footer {
-            flex-direction: column;
-            gap: 15px;
-          }
-        }
-      `}</style>
-    </main>
-  );
-  }
+        .sidebar {
+          width: 292px;
+          min-height: 100vh;
+          background: #030914;
+          border-right: 1px solid #182334;
+          padding: 14px 10px;
+          flex-shrin
