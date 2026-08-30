@@ -1,741 +1,935 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import EvenOddBot from "./components/EvenOddBot";
 
 const tools = [
   {
     id: 1,
     name: "Bot Builder",
     icon: "🤖",
-    color: "purple",
-    description: "Create and customize your own trading bot",
+    description: "Create and customize trading bots",
   },
   {
     id: 2,
     name: "Free Bot",
     icon: "🎁",
-    color: "blue",
-    description: "Use powerful free trading bots",
+    description: "Free automated trading tools",
   },
   {
     id: 3,
     name: "Premium AI Bot",
     icon: "👑",
-    color: "orange",
-    description: "Advanced AI bots with higher accuracy",
+    description: "Advanced AI trading system",
   },
   {
     id: 4,
     name: "Signal AI",
     icon: "◉",
-    color: "green",
-    description: "AI generated trading signals",
+    description: "AI-powered market signals",
   },
   {
     id: 5,
     name: "Manual Trader",
     icon: "☝",
-    color: "yellow",
-    description: "Trade manually with full control",
+    description: "Trade manually",
   },
   {
     id: 6,
     name: "Bulk Trader",
     icon: "▱",
-    color: "pink",
-    description: "Execute multiple trades at once",
+    description: "Multiple trades at once",
   },
   {
     id: 7,
     name: "Copy Trader",
     icon: "♙",
-    color: "cyan",
-    description: "Copy and follow top performing traders",
+    description: "Copy selected traders",
   },
   {
     id: 8,
     name: "Analysis Tool",
     icon: "⌁",
-    color: "purple",
-    description: "Powerful market analysis tools",
+    description: "Advanced market analysis",
   },
   {
     id: 9,
     name: "Chart",
     icon: "↗",
-    color: "blue",
-    description: "Advanced charts and indicators",
+    description: "Advanced live charts",
   },
 ];
 
-const digits = [
-  { digit: 0, value: "9.8%" },
-  { digit: 1, value: "11.3%" },
-  { digit: 2, value: "8.8%" },
-  { digit: 3, value: "10.2%" },
-  { digit: 4, value: "10.0%" },
-  { digit: 5, value: "8.4%" },
-  { digit: 6, value: "10.9%" },
-  { digit: 7, value: "10.2%" },
-  { digit: 8, value: "12.6%" },
-  { digit: 9, value: "7.8%" },
-];
-
 export default function HomePage() {
-  const [selectedTool, setSelectedTool] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
-  const [balanceOpen, setBalanceOpen] = useState(false);
-  const [isLive, setIsLive] = useState(true);
-  const [price, setPrice] = useState(734.44);
-  const [change, setChange] = useState(2.35);
-  const [signalConfidence, setSignalConfidence] = useState(72);
-  const [seconds, setSeconds] = useState(2);
-  const [chartPoints, setChartPoints] = useState([
-    733.1,
-    733.6,
-    733.4,
-    734.0,
-    734.7,
-    734.3,
-    735.0,
-    734.6,
-    734.1,
-    733.8,
-    733.4,
-    733.0,
-    732.7,
-    733.2,
-    733.8,
-    734.1,
-    733.9,
-    734.5,
-    735.1,
-    734.6,
-    733.8,
-    733.2,
-    732.9,
-    733.4,
-    733.9,
-    734.44,
-  ]);
+  const [selectedTool, setSelectedTool] = useState(null);
+  const [showEvenOdd, setShowEvenOdd] = useState(false);
 
-  // Simulated live market movement for the visual dashboard.
-  // Real Deriv data should be connected later through the API/WebSocket.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPrice((oldPrice) => {
-        const movement = (Math.random() - 0.47) * 0.55;
-        return Number((oldPrice + movement).toFixed(2));
-      });
-
-      setChange((oldChange) => {
-        const movement = (Math.random() - 0.5) * 0.08;
-        return Number((oldChange + movement).toFixed(2));
-      });
-
-      setSignalConfidence((old) => {
-        const movement = Math.floor(Math.random() * 5) - 2;
-        return Math.min(95, Math.max(55, old + movement));
-      });
-
-      setSeconds((old) => {
-        if (old <= 1) return 2;
-        return old - 1;
-      });
-
-      setChartPoints((oldPoints) => {
-        const last = oldPoints[oldPoints.length - 1];
-        const next = Number(
-          (last + (Math.random() - 0.48) * 0.65).toFixed(2)
-        );
-
-        return [...oldPoints.slice(1), next];
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const openTool = (tool) => {
-    setSelectedTool(tool);
-  };
-
-  const closeTool = () => {
-    setSelectedTool(null);
-  };
-
-  const login = () => {
+  const connectDeriv = () => {
     window.location.href = "/api/auth/login";
   };
 
+  const selectTool = (tool) => {
+    setSelectedTool(tool);
+
+    if (tool.id === 8) {
+      setShowEvenOdd(true);
+    }
+  };
+
   return (
-    <main className="dashboard">
-      {/* =========================
+    <main className="site">
+
+      {/* ================================
           SIDEBAR
-      ========================== */}
-      <aside className={`sidebar ${menuOpen ? "sidebar-open" : ""}`}>
+      ================================= */}
+
+      <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
+
         <div className="brand">
-          <div className="brand-mark">
-            <span>D</span>
-            <span>T</span>
+
+          <div className="brand-logo">
+            DT
           </div>
 
           <div>
             <div className="brand-name">
               <span>DOLLAR</span>TRADERS
             </div>
-            <div className="brand-subtitle">
+
+            <div className="brand-tagline">
               AI TRADING PLATFORM
             </div>
           </div>
+
         </div>
 
-        <nav className="side-nav">
-          <button className="side-link active">
-            <span className="side-number home-icon">⌂</span>
+        <div className="navigation-title">
+          TRADING TOOLS
+        </div>
+
+        <nav>
+
+          <button
+            className="nav-item active"
+            onClick={() => {
+              setSelectedTool(null);
+              setShowEvenOdd(false);
+            }}
+          >
+            <span className="nav-icon home">
+              ⌂
+            </span>
+
             <span>
               <strong>Dashboard</strong>
+              <small>Overview</small>
             </span>
           </button>
 
           {tools.map((tool) => (
             <button
               key={tool.id}
-              className="side-link"
-              onClick={() => openTool(tool)}
+              className="nav-item"
+              onClick={() => selectTool(tool)}
             >
-              <span className={`side-number ${tool.color}`}>
+
+              <span className={`nav-number n${tool.id}`}>
                 {tool.id}
               </span>
 
-              <span className="side-text">
+              <span>
                 <strong>{tool.name}</strong>
                 <small>{tool.description}</small>
               </span>
 
-              <span className="side-arrow">›</span>
+              <b>›</b>
+
             </button>
           ))}
+
         </nav>
 
-        <div className="demo-box">
-          <div className="demo-icon">◈</div>
+        <div className="demo-card">
+
+          <div className="demo-symbol">
+            ◆
+          </div>
+
           <div>
             <strong>DEMO MODE</strong>
-            <p>All trading is currently in demo mode.</p>
+
+            <p>
+              Test your strategies before
+              using real funds.
+            </p>
           </div>
+
         </div>
+
       </aside>
 
-      {/* =========================
-          MAIN AREA
-      ========================== */}
-      <section className="main-area">
+      {/* ================================
+          MAIN
+      ================================= */}
+
+      <section className="main">
 
         {/* TOP BAR */}
+
         <header className="topbar">
+
           <button
             className="mobile-menu"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Open menu"
           >
             ☰
           </button>
 
-          <div className="top-status">
-            <span className={`status-dot ${isLive ? "online" : "offline"}`} />
+          <div className="market-status">
+
+            <span className="live-dot" />
+
             <strong>
-              {isLive ? "MARKET LIVE" : "MARKET OFFLINE"}
+              MARKET LIVE
             </strong>
+
           </div>
 
           <div className="top-actions">
 
-            {/* LOGIN */}
-            <button className="login-button" onClick={login}>
-              <span>↪</span>
-              Connect Deriv
+            <button
+              className="connect-button"
+              onClick={connectDeriv}
+            >
+              ↪ CONNECT DERIV
             </button>
 
-            {/* ACCOUNT */}
-            <div className="dropdown-wrapper">
-              <button
-                className="top-account"
-                onClick={() => setAccountOpen(!accountOpen)}
-              >
-                <span className="account-icon">♙</span>
-                <span>
-                  <small>Account</small>
-                  <strong>Demo Account</strong>
-                </span>
-                <span>⌄</span>
-              </button>
+            <div className="account-box">
 
-              {accountOpen && (
-                <div className="dropdown">
-                  <button onClick={login}>
-                    Connect Deriv Account
-                  </button>
-                  <button>Account Details</button>
-                  <button>Logout</button>
-                </div>
-              )}
+              <span className="user-symbol">
+                ♙
+              </span>
+
+              <div>
+                <small>ACCOUNT</small>
+                <strong>
+                  Demo Account
+                </strong>
+              </div>
+
+              <span>⌄</span>
+
             </div>
 
-            {/* BALANCE */}
-            <div className="dropdown-wrapper">
-              <button
-                className="balance-box"
-                onClick={() => setBalanceOpen(!balanceOpen)}
-              >
-                <span>
-                  <small>Balance</small>
-                  <strong>10,000.00 USD</strong>
-                </span>
-                <span>⌄</span>
-              </button>
+            <div className="balance-box">
 
-              {balanceOpen && (
-                <div className="dropdown balance-dropdown">
-                  <div>
-                    <small>Demo Balance</small>
-                    <strong>10,000.00 USD</strong>
-                  </div>
-                  <div>
-                    <small>Profit/Loss</small>
-                    <strong className="green-text">
-                      +0.00 USD
-                    </strong>
-                  </div>
-                </div>
-              )}
+              <small>BALANCE</small>
+
+              <strong>
+                10,000.00 USD
+              </strong>
+
             </div>
 
-            <div className="profile-circle">DT</div>
+            <div className="avatar">
+              DT
+            </div>
+
           </div>
+
         </header>
 
-        {/* CONTENT */}
+        {/* PAGE CONTENT */}
+
         <div className="content">
 
-          {/* MARKET + ACCOUNT ROW */}
-          <div className="top-grid">
+          {/* WELCOME */}
 
-            {/* MARKET OVERVIEW */}
-            <section className="panel market-panel">
-              <div className="panel-heading">
-                <div>
-                  <span className="green-chart-icon">⌁</span>
-                  <strong>Market Overview</strong>
-                </div>
+          <section className="welcome">
 
-                <span className="live-label">
-                  <span className="status-dot online" />
-                  LIVE
+            <div>
+
+              <span>
+                DOLLARTRADERS AI
+              </span>
+
+              <h1>
+                Intelligent Trading
+                <br />
+                Dashboard
+              </h1>
+
+              <p>
+                Analyze the market, generate signals
+                and manage your trading strategies
+                from one powerful platform.
+              </p>
+
+            </div>
+
+            <div className="welcome-status">
+
+              <span className="live-dot" />
+
+              SYSTEM OPERATIONAL
+
+            </div>
+
+          </section>
+
+          {/* MARKET CARDS */}
+
+          <div className="market-grid">
+
+            <div className="panel market-card">
+
+              <div className="card-title">
+                <span>
+                  ◈ MARKET OVERVIEW
                 </span>
+
+                <em>
+                  LIVE
+                </em>
               </div>
 
-              <div className="market-name">
+              <h3>
                 Volatility 100 (1s) Index
+              </h3>
+
+              <div className="price">
+                734.44
+                <span>↑</span>
               </div>
 
-              <div className="market-main">
-                <div>
-                  <div className="big-price">
-                    {price.toFixed(2)}
-                    <span className="up-arrow">↑</span>
-                  </div>
-
-                  <div className="positive">
-                    +{change.toFixed(2)} ({Math.abs(change / 7.3).toFixed(2)}%)
-                  </div>
-                </div>
-
-                <div className="market-stats">
-                  <div>
-                    <small>High</small>
-                    <strong>735.62</strong>
-                  </div>
-
-                  <div>
-                    <small>Low</small>
-                    <strong>730.81</strong>
-                  </div>
-
-                  <div>
-                    <small>24H Change</small>
-                    <strong className="green-text">0.32%</strong>
-                  </div>
-                </div>
-
-                <MiniWave />
+              <div className="positive">
+                +2.35 (+0.32%)
               </div>
-            </section>
 
-            {/* ACCOUNT OVERVIEW */}
-            <section className="panel account-panel">
-              <div className="panel-heading">
+              <div className="market-details">
+
                 <div>
-                  <span className="purple-icon">♙</span>
-                  <strong>Account Overview</strong>
+                  <small>HIGH</small>
+                  <strong>735.62</strong>
                 </div>
 
-                <span className="demo-label">Demo</span>
+                <div>
+                  <small>LOW</small>
+                  <strong>730.81</strong>
+                </div>
+
+                <div>
+                  <small>CHANGE</small>
+                  <strong>+0.32%</strong>
+                </div>
+
+              </div>
+
+              <div className="wave">
+                <svg
+                  viewBox="0 0 500 100"
+                  preserveAspectRatio="none"
+                >
+                  <polyline
+                    points="
+                    0,70
+                    30,62
+                    55,68
+                    85,42
+                    110,55
+                    140,25
+                    170,47
+                    200,20
+                    230,37
+                    260,12
+                    290,35
+                    320,23
+                    350,48
+                    380,20
+                    410,38
+                    440,17
+                    470,28
+                    500,14
+                    "
+                    fill="none"
+                    stroke="#16e58a"
+                    strokeWidth="3"
+                  />
+                </svg>
+              </div>
+
+            </div>
+
+            <div className="panel account-card">
+
+              <div className="card-title">
+                <span>
+                  ♙ ACCOUNT OVERVIEW
+                </span>
+
+                <em className="purple">
+                  DEMO
+                </em>
               </div>
 
               <div className="account-grid">
+
                 <div>
-                  <small>Balance</small>
-                  <strong className="green-text">
+                  <small>BALANCE</small>
+                  <strong className="green">
                     10,000.00 USD
                   </strong>
                 </div>
 
                 <div>
-                  <small>Profit/Loss</small>
-                  <strong className="green-text">
+                  <small>PROFIT / LOSS</small>
+                  <strong className="green">
                     +0.00 USD
                   </strong>
                 </div>
 
                 <div>
-                  <small>Equity</small>
-                  <strong>10,000.00 USD</strong>
+                  <small>EQUITY</small>
+                  <strong>
+                    10,000.00 USD
+                  </strong>
                 </div>
 
                 <div>
-                  <small>Available</small>
-                  <strong>10,000.00 USD</strong>
+                  <small>AVAILABLE</small>
+                  <strong>
+                    10,000.00 USD
+                  </strong>
                 </div>
+
               </div>
 
-              <button className="account-details">
+              <button className="details-button">
                 ACCOUNT DETAILS ↗
               </button>
-            </section>
+
+            </div>
+
           </div>
 
-          {/* QUICK ACCESS + SIGNAL */}
-          <div className="middle-grid">
+          {/* QUICK ACCESS */}
 
-            {/* QUICK ACCESS */}
-            <section className="panel quick-panel">
-              <div className="section-title">
+          <section className="panel quick-access">
+
+            <div className="section-heading">
+
+              <div>
                 <span>⚡</span>
-                Quick Access
-              </div>
 
-              <div className="tool-grid">
-                {tools.map((tool) => (
-                  <button
-                    key={tool.id}
-                    className={`tool-card ${tool.color}`}
-                    onClick={() => openTool(tool)}
-                  >
-                    <div className="tool-icon">
-                      {tool.icon}
-                    </div>
-
-                    <div className="tool-number">
-                      {tool.id}
-                    </div>
-
-                    <div className="tool-content">
-                      <strong>{tool.name}</strong>
-                      <small>{tool.description}</small>
-                    </div>
-
-                    <span className="tool-arrow">›</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-
-            {/* AI SIGNAL */}
-            <section className="panel signal-panel">
-              <div className="panel-heading">
                 <div>
-                  <span className="signal-icon">♧</span>
-                  <strong>AI Signal</strong>
-                </div>
+                  <h2>
+                    Quick Access
+                  </h2>
 
-                <small>Confidence</small>
+                  <p>
+                    Select a trading module
+                  </p>
+                </div>
               </div>
 
-              <div className="signal-header">
-                <div>
-                  <h2>Matches</h2>
-                  <p>Volatility 100 (1s) Index</p>
-                </div>
+            </div>
 
-                <div className="confidence">
-                  <div
-                    className="confidence-ring"
-                    style={{
-                      "--confidence": `${signalConfidence}%`,
-                    }}
-                  >
-                    <span>{signalConfidence}%</span>
+            <div className="tools-grid">
+
+              {tools.map((tool) => (
+
+                <button
+                  key={tool.id}
+                  className={`tool-card tool-${tool.id}`}
+                  onClick={() => selectTool(tool)}
+                >
+
+                  <div className="tool-icon">
+                    {tool.icon}
                   </div>
+
+                  <div className="tool-number">
+                    {String(tool.id).padStart(2, "0")}
+                  </div>
+
+                  <div className="tool-info">
+
+                    <strong>
+                      {tool.name}
+                    </strong>
+
+                    <small>
+                      {tool.description}
+                    </small>
+
+                  </div>
+
+                  <span className="tool-arrow">
+                    ›
+                  </span>
+
+                </button>
+
+              ))}
+
+            </div>
+
+          </section>
+
+          {/* SIGNAL + DIGIT */}
+
+          <div className="analysis-grid">
+
+            <section className="panel signal-card">
+
+              <div className="card-title">
+                <span>
+                  ◉ AI SIGNAL
+                </span>
+
+                <em>
+                  72% CONFIDENCE
+                </em>
+              </div>
+
+              <div className="signal-main">
+
+                <div>
+
+                  <small>
+                    CURRENT SIGNAL
+                  </small>
+
+                  <h2>
+                    WAIT
+                  </h2>
+
+                  <p>
+                    Waiting for stronger market
+                    conditions.
+                  </p>
+
                 </div>
+
+                <div className="confidence-circle">
+                  72%
+                </div>
+
               </div>
 
               <div className="signal-row">
-                <span>Next Tick Prediction</span>
-                <strong>{seconds} Seconds</strong>
+
+                <span>
+                  Market
+                </span>
+
+                <strong>
+                  Volatility 100 (1s)
+                </strong>
+
               </div>
 
               <div className="signal-row">
-                <span>Recommended Entry</span>
-                <strong>734.40 - 734.60</strong>
-              </div>
 
-              <div className="signal-row">
-                <span>Expiry</span>
-                <strong>1 Tick</strong>
+                <span>
+                  Expiry
+                </span>
+
+                <strong>
+                  1 Tick
+                </strong>
+
               </div>
 
               <button
                 className="signal-button"
                 onClick={() =>
-                  setSelectedTool({
+                  selectTool({
+                    id: 4,
                     name: "Signal AI",
                     icon: "◉",
                     description:
-                      "AI generated trading signal",
+                      "AI-powered market signals",
                   })
                 }
               >
                 VIEW SIGNAL DETAILS
                 <span>›</span>
               </button>
-            </section>
-          </div>
 
-          {/* CHART + DIGIT ANALYSIS */}
-          <div className="bottom-grid">
-
-            {/* CHART */}
-            <section className="panel chart-panel">
-              <div className="chart-header">
-                <strong>Live Chart</strong>
-
-                <div className="chart-controls">
-                  <button>1s⌄</button>
-                  <button>⌁⌄</button>
-                  <button>⛶</button>
-                  <button>×</button>
-                </div>
-              </div>
-
-              <div className="chart-area">
-                <div className="chart-y">
-                  <span>736.00</span>
-                  <span>735.00</span>
-                  <span>734.00</span>
-                  <span>733.00</span>
-                  <span>732.00</span>
-                  <span>731.00</span>
-                </div>
-
-                <div className="grid-lines">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </div>
-
-                <ChartLine points={chartPoints} />
-
-                <div className="current-price">
-                  {price.toFixed(2)}
-                </div>
-
-                <div className="chart-times">
-                  <span>14:42:10</span>
-                  <span>14:42:20</span>
-                  <span>14:42:30</span>
-                  <span>14:42:40</span>
-                  <span>14:42:50</span>
-                  <span>14:43:00</span>
-                </div>
-              </div>
             </section>
 
-            {/* DIGIT ANALYSIS */}
-            <section className="panel digit-panel">
-              <div className="digit-heading">
-                <strong>Digit Analysis</strong>
-                <span>(Last 1000 Ticks)</span>
+            <section className="panel digit-card">
+
+              <div className="card-title">
+
+                <span>
+                  ⌁ DIGIT ANALYSIS
+                </span>
+
+                <em>
+                  LAST 1000 TICKS
+                </em>
+
               </div>
 
-              <div className="digit-grid">
-                {digits.map((item) => (
+              <div className="digits">
+
+                {[
+                  ["0", "9.8%"],
+                  ["1", "11.3%"],
+                  ["2", "8.8%"],
+                  ["3", "10.2%"],
+                  ["4", "10.0%"],
+                  ["5", "8.4%"],
+                  ["6", "10.9%"],
+                  ["7", "10.2%"],
+                  ["8", "12.6%"],
+                  ["9", "7.8%"],
+                ].map(([digit, percentage]) => (
+
                   <div
-                    key={item.digit}
-                    className={`digit-box ${
-                      item.digit === 8
-                        ? "hot-digit"
-                        : item.digit === 9
-                        ? "cold-digit"
-                        : ""
-                    }`}
+                    key={digit}
+                    className={
+                      digit === "8"
+                        ? "digit hot"
+                        : digit === "9"
+                        ? "digit cold"
+                        : "digit"
+                    }
                   >
-                    <strong>{item.digit}</strong>
-                    <span>{item.value}</span>
 
-                    <div className="digit-bar">
+                    <strong>
+                      {digit}
+                    </strong>
+
+                    <span>
+                      {percentage}
+                    </span>
+
+                    <div className="digit-line">
                       <i
                         style={{
-                          width: item.value,
+                          width: percentage,
                         }}
                       />
                     </div>
+
                   </div>
+
                 ))}
+
               </div>
 
-              <div className="heat-labels">
-                <span>Hot</span>
-
-                <div className="heat-bar">
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </div>
-
-                <span>Cold</span>
-              </div>
-
-              <div className="neutral">Neutral</div>
             </section>
+
           </div>
 
-          {/* SYSTEM STATUS */}
-          <footer className="system-status">
+          {/* LIVE CHART */}
+
+          <section className="panel chart-card">
+
+            <div className="card-title">
+
+              <span>
+                ↗ LIVE MARKET CHART
+              </span>
+
+              <div className="chart-buttons">
+                <button>1s</button>
+                <button>⌁</button>
+                <button>⛶</button>
+              </div>
+
+            </div>
+
+            <div className="chart">
+
+              <div className="chart-grid">
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+
+              <svg
+                viewBox="0 0 1000 300"
+                preserveAspectRatio="none"
+              >
+
+                <defs>
+
+                  <linearGradient
+                    id="area"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+
+                    <stop
+                      offset="0%"
+                      stopColor="#16e58a"
+                      stopOpacity="0.25"
+                    />
+
+                    <stop
+                      offset="100%"
+                      stopColor="#16e58a"
+                      stopOpacity="0"
+                    />
+
+                  </linearGradient>
+
+                </defs>
+
+                <polygon
+                  points="
+                  0,260
+                  50,245
+                  100,255
+                  150,220
+                  200,230
+                  250,190
+                  300,205
+                  350,155
+                  400,180
+                  450,145
+                  500,165
+                  550,125
+                  600,150
+                  650,115
+                  700,135
+                  750,95
+                  800,120
+                  850,82
+                  900,105
+                  950,70
+                  1000,85
+                  1000,300
+                  0,300
+                  "
+                  fill="url(#area)"
+                />
+
+                <polyline
+                  points="
+                  0,260
+                  50,245
+                  100,255
+                  150,220
+                  200,230
+                  250,190
+                  300,205
+                  350,155
+                  400,180
+                  450,145
+                  500,165
+                  550,125
+                  600,150
+                  650,115
+                  700,135
+                  750,95
+                  800,120
+                  850,82
+                  900,105
+                  950,70
+                  1000,85
+                  "
+                  fill="none"
+                  stroke="#16e58a"
+                  strokeWidth="3"
+                />
+
+              </svg>
+
+              <div className="chart-price">
+                734.44
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* =================================
+              EVEN ODD BOT
+          ================================= */}
+
+          {showEvenOdd && (
+            <div className="bot-section">
+
+              <div className="bot-section-heading">
+
+                <div>
+
+                  <span>
+                    AI TRADING BOT
+                  </span>
+
+                  <h2>
+                    Even / Odd Strategy
+                  </h2>
+
+                  <p>
+                    Statistical digit analysis
+                    and signal generation.
+                  </p>
+
+                </div>
+
+                <button
+                  onClick={() => setShowEvenOdd(false)}
+                >
+                  CLOSE ×
+                </button>
+
+              </div>
+
+              <EvenOddBot />
+
+            </div>
+          )}
+
+          {/* FOOTER */}
+
+          <footer>
 
             <div>
-              <small>System Status</small>
+
+              <small>
+                SYSTEM STATUS
+              </small>
+
               <strong>
-                <span className="status-dot online" />
+                <span className="live-dot" />
                 All systems operational
               </strong>
+
             </div>
 
             <div>
-              <small>Deriv API</small>
+
+              <small>
+                DERIV API
+              </small>
+
               <strong>
-                <span className="status-dot" />
                 Awaiting connection
               </strong>
+
             </div>
 
             <div>
-              <small>Server Time</small>
+
+              <small>
+                MODE
+              </small>
+
               <strong>
-                {new Date().toLocaleTimeString()}
+                DEMO
               </strong>
+
             </div>
 
             <div>
-              <small>Risk Disclaimer</small>
+
+              <small>
+                RISK NOTICE
+              </small>
+
               <strong>
-                Trading involves risk. Past performance is
-                not indicative of future results.
+                Trading involves financial risk.
               </strong>
+
             </div>
 
           </footer>
+
         </div>
+
       </section>
 
-      {/* =========================
+      {/* ================================
           TOOL MODAL
-      ========================== */}
-      {selectedTool && (
-        <div className="modal-backdrop" onClick={closeTool}>
+      ================================= */}
+
+      {selectedTool &&
+        selectedTool.id !== 8 && (
           <div
-            className="modal"
-            onClick={(event) => event.stopPropagation()}
+            className="modal-background"
+            onClick={() => setSelectedTool(null)}
           >
-            <button className="modal-close" onClick={closeTool}>
-              ×
-            </button>
 
-            <div className="modal-icon">
-              {selectedTool.icon}
-            </div>
-
-            <h2>{selectedTool.name}</h2>
-
-            <p>{selectedTool.description}</p>
-
-            <div className="demo-notice">
-              <span>●</span>
-              Demo interface
-            </div>
-
-            <p className="modal-description">
-              This module is ready for its trading functionality
-              to be connected to the Deriv API.
-            </p>
-
-            <button
-              className="modal-connect"
-              onClick={login}
+            <div
+              className="modal"
+              onClick={(event) =>
+                event.stopPropagation()
+              }
             >
-              CONNECT DERIV ACCOUNT
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* =========================
+              <button
+                className="modal-close"
+                onClick={() =>
+                  setSelectedTool(null)
+                }
+              >
+                ×
+              </button>
+
+              <div className="modal-icon">
+                {selectedTool.icon}
+              </div>
+
+              <h2>
+                {selectedTool.name}
+              </h2>
+
+              <p>
+                {selectedTool.description}
+              </p>
+
+              <div className="coming">
+                MODULE READY
+              </div>
+
+              <p className="modal-note">
+                This module is prepared for
+                connection to the Deriv API.
+              </p>
+
+              <button
+                className="modal-connect"
+                onClick={connectDeriv}
+              >
+                CONNECT DERIV ACCOUNT
+              </button>
+
+            </div>
+
+          </div>
+        )}
+
+      {/* =================================
           STYLES
-      ========================== */}
+      ================================= */}
+
       <style jsx>{`
 
         * {
           box-sizing: border-box;
         }
 
-        .dashboard {
+        .site {
           min-height: 100vh;
           background:
             radial-gradient(
-              circle at 20% 0%,
-              rgba(0, 255, 150, 0.045),
-              transparent 28%
+              circle at 50% -20%,
+              rgba(0,229,138,.08),
+              transparent 35%
             ),
-            #020710;
-          color: #eef4ff;
-          display: flex;
-          font-family:
-            Inter,
-            Arial,
-            Helvetica,
-            sans-serif;
-        }
-
-        button {
-          font-family: inherit;
-        }
-
-        /* SIDEBAR */
-
-        .sidebar {
-          width: 292px;
-          min-height: 100vh;
-          background: #030914;
-          border-right: 1px solid #182334;
-          padding: 14px 10px;
-          flex-shrin
+            #02070e;
+          color: #eef4f8;
+          fo
